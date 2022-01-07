@@ -1,0 +1,46 @@
+{
+  "private": true,
+  "scripts": {
+    "start": "umi dev",
+    "build": "umi build",
+    "postinstall": "umi generate tmp",
+    "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,less,md,json}'",
+    "test": "umi-test",
+    "test:coverage": "umi-test --coverage"
+  },
+  "proxy": "http://localhost:3001",
+  "gitHooks": {
+    "pre-commit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,jsx,less,md,json}": [
+      "prettier --write"
+    ],
+    "*.ts?(x)": [
+      "prettier --parser=typescript --write"
+    ]
+  },
+  "dependencies": {
+    "@emotion/react": "^11.5.0",
+    "@emotion/styled": "^11.3.0",
+    "@mui/icons-material": "^5.0.5",
+    "@mui/lab": "^5.0.0-alpha.51",
+    "@mui/material": "^5.0.4",
+    "@umijs/preset-react": "1.x",
+    "@umijs/test": "^3.2.27",
+    "@visx/group": "^2.1.0",
+    "@visx/marker": "^2.2.2",
+    "@visx/mock-data": "^2.1.2",
+    "@visx/scale": "^2.2.2",
+    "@visx/shape": "^2.2.2",
+    "d3-array": "^2.12.1",
+    "dayjs": "^1.10.7",
+    "lint-staged": "^10.0.7",
+    "prettier": "^1.19.1",
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0",
+    "recharts": "^2.1.6",
+    "umi": "^3.2.27",
+    "yorkie": "^2.0.0"
+  }
+}

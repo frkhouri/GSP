@@ -1,0 +1,35 @@
+import { useState } from 'react';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+import Paper from '@mui/material/Paper';
+import HomeIcon from '@mui/icons-material/Home';
+import InsightsRoundedIcon from '@mui/icons-material/InsightsRounded';
+import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import TodayRoundedIcon from '@mui/icons-material/TodayRounded';
+import { history, useLocation } from 'umi';
+
+import styles from '../styles.less';
+
+const BottomBar = () => {
+  const [value, setValue] = useState(
+    useLocation().pathname.substring(1) || 'home',
+  );
+
+  const handleChange = (event: any, newValue: string) => {
+    setValue(newValue);
+    history.push(`/${newValue}`);
+  };
+
+  return (
+    <Paper className={styles.bottomNav}>
+      <BottomNavigation value={value} onChange={handleChange}>
+        <BottomNavigationAction value="home" icon={<HomeIcon />} />
+        <BottomNavigationAction value="stats" icon={<InsightsRoundedIcon />} />
+        <BottomNavigationAction value="schedule" icon={<TodayRoundedIcon />} />
+        <BottomNavigationAction value="settings" icon={<SettingsRoundedIcon />} />
+      </BottomNavigation>
+    </Paper>
+  );
+};
+
+export default BottomBar;
