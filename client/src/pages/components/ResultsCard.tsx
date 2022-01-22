@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import { CardActionArea } from '@mui/material';
 import CardContent from '@mui/material/CardContent';
@@ -10,15 +9,13 @@ import ArrowRightAltRoundedIcon from '@mui/icons-material/ArrowRightAltRounded';
 import * as dayjs from 'dayjs';
 import { history } from 'umi';
 
+import CustomCard from './CustomCard';
 import PerformanceChart from './PerformanceChart';
 
 const ResultsCard = ({ sessionData }) => {
   console.log(sessionData);
   return (
-    <Card
-      variant="outlined"
-      style={{ margin: '5px 15px', borderRadius: '20px' }}
-    >
+    <CustomCard>
       {sessionData ? (
         <CardActionArea onClick={() => history.push({pathname: `/sessions/${sessionData._id}`, state: sessionData})}>
           <CardHeader
@@ -141,7 +138,7 @@ const ResultsCard = ({ sessionData }) => {
       ) : (
         <p>loading</p>
       )}
-    </Card>
+    </CustomCard>
   );
 };
 

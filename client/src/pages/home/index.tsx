@@ -3,6 +3,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import { Typography } from '@mui/material';
+import '@fontsource/oxygen/700.css'
 
 import ProgressCard from '../components/ProgressCard';
 import ResultsCard from '../components/ResultsCard';
@@ -20,7 +21,7 @@ export default () => {
   }, []);
 
   return (
-    <div className="App" style={{ background: '#f7fafb' }}>
+    <div className="App">
       {/* <AppBar elevation={0} color="#f7fafb">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
@@ -28,13 +29,13 @@ export default () => {
           </Typography>
         </Toolbar>
       </AppBar> */}
-      <Typography variant="h4" style={{ padding: '15px' }}>
+      <Typography variant="h4" style={{ padding: '15px 15px 0 15px', fontWeight: '700' }}>
         Overview
       </Typography>
       <>
         <Typography
-          variant="subtitle2"
-          style={{ padding: '0px 15px', color: '#757575' }}
+          variant="subtitle1"
+          style={{ padding: '0px 20px', marginTop: '15px', color: '#757575' }}
         >
           Latest Session
         </Typography>
@@ -46,8 +47,8 @@ export default () => {
       </>
       <>
         <Typography
-          variant="subtitle2"
-          style={{ padding: '0px 15px', color: '#757575' }}
+          variant="subtitle1"
+          style={{ padding: '0px 20px', marginTop: '15px', color: '#757575' }}
         >
           My Progress
         </Typography>

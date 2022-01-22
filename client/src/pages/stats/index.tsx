@@ -18,14 +18,14 @@ export default () => {
   }, []);
 
   return (
-    <div className="App" style={{ background: '#f7fafb' }}>
-      <Typography variant="h4" style={{ padding: '15px' }}>
+    <div className="App">
+      <Typography variant="h4" style={{ padding: '15px 15px 0 15px', fontWeight: '700' }}>
         History
       </Typography>
       <>
         <Typography
-          variant="subtitle2"
-          style={{ padding: '0px 15px', color: '#757575' }}
+          variant="subtitle1"
+          style={{ padding: '0px 20px', marginTop: '15px', color: '#757575' }}
         >
           Past Sessions
         </Typography>
