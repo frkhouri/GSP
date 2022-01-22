@@ -5,19 +5,34 @@ import {
   YAxis,
   Legend,
   ResponsiveContainer,
-  Tooltip
+  Tooltip,
 } from 'recharts';
+import { useTheme } from '@material-ui/core';
 
 const PerformanceChart = ({ data }) => {
+  const theme = useTheme();
+
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="custom-tooltip" style={{ background: '#ffffff9e', padding: '5px', height: '30px', fontSize: 'smaller', borderRadius: '7px' }}>
-          <p className="label">{`Performance : ${payload[0].value}`}</p>
+        <div
+          className="custom-tooltip"
+          style={{
+            background: '#ffffff9e',
+            padding: '5px',
+            height: '26px',
+            fontSize: 'smaller',
+            borderRadius: '7px',
+            fontFamily: 'Oxygen',
+          }}
+        >
+          <p className="label">{`Performance : ${payload[0].value.toFixed(
+            1,
+          )}`}</p>
         </div>
       );
     }
-  
+
     return null;
   };
 
@@ -35,25 +50,38 @@ const PerformanceChart = ({ data }) => {
         >
           <defs>
             <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#f44336" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#f44336" stopOpacity={0} />
+              <stop
+                offset="5%"
+                stopColor={theme.palette.primary.main}
+                stopOpacity={0.8}
+              />
+              <stop
+                offset="95%"
+                stopColor={theme.palette.primary.main}
+                stopOpacity={0}
+              />
             </linearGradient>
           </defs>
           <XAxis
             dataKey="time"
             type="number"
             domain={['dataMin', 'dataMax']}
-            label={{ value: 'Time', position: 'bottom' }}
-            tickFormatter={(value) => value.toFixed(0)}
+            label={{ value: 'Time', position: 'insideBottom', offset: -5 }}
+            tickFormatter={value => value.toFixed(0)}
           />
           <YAxis
-            label={{ value: 'Performance', angle: -90, position: 'insideLeft' }}
+            label={{
+              value: 'Performance',
+              angle: -90,
+              position: 'insideBottomLeft',
+              offset: 25,
+            }}
           />
           <Tooltip content={CustomTooltip} />
           <Area
             type="monotone"
             dataKey="performance"
-            stroke="#f44336"
+            stroke={theme.palette.primary.main}
             fillOpacity={1}
             fill="url(#colorPv)"
           />

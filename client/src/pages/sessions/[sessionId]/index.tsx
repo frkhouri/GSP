@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import Card from '@mui/material/Card';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
@@ -8,6 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import dayjs from 'dayjs';
 
+import CustomCard from '@/pages/components/CustomCard';
 // import ProgressCard from '../components/ProgressCard';
 import ResultsCard from '../../components/ResultsCard';
 import PerformanceChart from '../../components/PerformanceChart';
@@ -58,9 +58,9 @@ export default () => {
           )}
         </Toolbar>
       </AppBar> */}
-      <Card style={{ padding: '15px', margin: '15px' }}>
+      <CustomCard style={{ padding: '15px', margin: '15px' }}>
         {sessionData && <PerformanceChart data={sessionData.combos} />}
-      </Card>
+      </CustomCard>
     </>
   );
 };

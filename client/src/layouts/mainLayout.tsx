@@ -1,5 +1,9 @@
+import { useState } from 'react';
 import BottomBar from './components/BottomBar';
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
+import { CssBaseline } from '@material-ui/core';
+import { createTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import { ThemeProvider } from '@mui/material/styles';
+import '@fontsource/oxygen';
 import styles from './styles.less';
 
 type MainLayoutProps = {
@@ -10,29 +14,40 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   const theme = createTheme({
     palette: {
       primary: {
-        main: '#f44336',
+        main: '#d32f2f',
       },
       secondary: {
         main: '#000000',
       },
+      // info: {
+      //   main: '#f44336',
+      // },
+      background: {
+        default: '#f2f4f5',
+      },
     },
-    typography: {
-      fontFamily: `"Oxygen", "Roboto", "Helvetica", "Arial", sans-serif`,
-      fontSize: 14,
-      fontWeightLight: 300,
-      fontWeightRegular: 400,
-      fontWeightMedium: 500,
-    },
+    // typography: {
+    //   fontFamily: [
+    //     '"Oxygen"',
+    //     'Roboto',
+    //     '"Helvetica"',
+    //     'Arial',
+    //     'sans-serif',
+    //   ].join(','),
+    //   fontSize: 14,
+    //   fontWeightLight: 300,
+    //   fontWeightRegular: 400,
+    //   fontWeightMedium: 500,
+    // },
   });
 
   return (
     <ThemeProvider theme={theme}>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Oxygen:wght@300;400;700&display=swap"
-      />
-      <div className={styles.body}>{children}</div>
-      <BottomBar />
+      <MuiThemeProvider theme={theme}>
+        <CssBaseline />
+        <div className={styles.body}>{children}</div>
+        <BottomBar />
+      </MuiThemeProvider>
     </ThemeProvider>
   );
 };

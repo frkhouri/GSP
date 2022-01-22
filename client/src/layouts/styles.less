@@ -1,8 +1,7 @@
 .body {
   padding: 20px 0px 56px;
-  font-family: Oxygen;
+  // font-family: Oxygen !important;
   //margin: 55px 0;
-  //background: #fafafa;
 }
 
 // BottomBar
@@ -11,4 +10,10 @@
   bottom: 0px;
   width: 100%;
   z-index: 4;
+}
+
+:global {
+  .MuiTypography-root {
+    font-family: Oxygen !important;
+  }
 }
