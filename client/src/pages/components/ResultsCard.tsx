@@ -17,7 +17,14 @@ const ResultsCard = ({ sessionData }) => {
   return (
     <CustomCard>
       {sessionData ? (
-        <CardActionArea onClick={() => history.push({pathname: `/sessions/${sessionData._id}`, state: sessionData})}>
+        <CardActionArea
+          onClick={() =>
+            history.push({
+              pathname: `/sessions/${sessionData._id}`,
+              state: sessionData,
+            })
+          }
+        >
           <CardHeader
             title={dayjs(sessionData.start).format('MMM. D, YYYY')}
             action={

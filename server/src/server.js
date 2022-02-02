@@ -14,6 +14,7 @@ MongoClient.connect(connectionString)
 
     const db = client.db('khabib-test');
     const sessionsCollection = db.collection('sessions');
+    const preparedSessionsCollection = db.collection('prepared_sessions');
 
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
@@ -30,22 +31,22 @@ MongoClient.connect(connectionString)
     // });
 
     app.get('/api/sessions', (req, res) => {
-      console.log(req.query);
+      // console.log(req.query);
       req.query.sessionId
         ? sessionsCollection
             .find({ _id: ObjectId(req.query.sessionId) })
             .toArray()
             .then((results) => {
-              console.log(results);
+              // console.log(results);
               res.send(results[0]);
             })
             .catch((error) => console.error(error))
         : sessionsCollection
             .find()
-            .sort({ start: -1 })
+            .sort({ start: 1 })
             .toArray()
             .then((results) => {
-              console.log(results);
+              // console.log(results);
               res.send(results);
             })
             .catch((error) => console.error(error));
@@ -64,12 +65,12 @@ MongoClient.connect(connectionString)
     app.get('/api/sessions/latest', (req, res) => {
       sessionsCollection
         .find()
-        .sort( { _id: -1} )
+        .sort({ _id: -1 })
         // .sort({ start: -1 })
         .limit(1)
         .toArray()
         .then((result) => {
-          console.log(result);
+          // console.log(result);
           res.send(result[0]);
         })
         .catch((e) => console.error(e));
@@ -89,9 +90,9 @@ MongoClient.connect(connectionString)
 
         return {
           ...combo,
-          accuracy: +(accuracy).toFixed(3),
-          force: +(force).toFixed(3),
-          performance: +(performance).toFixed(3),
+          accuracy: +accuracy.toFixed(3),
+          force: +force.toFixed(3),
+          performance: +performance.toFixed(3),
         };
       });
 
@@ -115,12 +116,25 @@ MongoClient.connect(connectionString)
         combos: processedCombos,
       };
 
-      console.log(processedData);
+      // console.log(processedData);
 
       sessionsCollection
         .insertOne(processedData)
         .then((result) => {
-          console.log(result);
+          // console.log(result);
+          res.send();
+        })
+        .catch((error) => console.error(error));
+
+      res.send();
+    });
+
+    app.post('/api/start-session', (req, res) => {
+      // console.log(req.body);
+      preparedSessionsCollection
+        .insertOne(req.body)
+        .then((result) => {
+          // console.log(result);
           res.send();
         })
         .catch((error) => console.error(error));

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import Paper from '@mui/material/Paper';
-import HomeIcon from '@mui/icons-material/Home';
+import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import InsightsRoundedIcon from '@mui/icons-material/InsightsRounded';
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import TodayRoundedIcon from '@mui/icons-material/TodayRounded';
@@ -23,7 +23,7 @@ const BottomBar = () => {
   return (
     <Paper elevation={5} className={styles.bottomNav}>
       <BottomNavigation value={value} onChange={handleChange}>
-        <BottomNavigationAction value="home" icon={<HomeIcon />} />
+        <BottomNavigationAction value="home" icon={<HomeRoundedIcon />} />
         <BottomNavigationAction value="stats" icon={<InsightsRoundedIcon />} />
         <BottomNavigationAction value="schedule" icon={<TodayRoundedIcon />} />
         <BottomNavigationAction value="settings" icon={<PersonRoundedIcon />} />

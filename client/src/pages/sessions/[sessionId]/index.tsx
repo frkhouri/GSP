@@ -58,8 +58,8 @@ export default () => {
           )}
         </Toolbar>
       </AppBar> */}
-      <CustomCard style={{ padding: '15px', margin: '15px' }}>
-        {sessionData && <PerformanceChart data={sessionData.combos} />}
+      <CustomCard>
+        {sessionData && <ResultsCard sessionData={sessionData} />}
       </CustomCard>
     </>
   );
