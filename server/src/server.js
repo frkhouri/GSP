@@ -2,11 +2,22 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const cors = require('cors');
 const MongoClient = require('mongodb').MongoClient;
+const path = require('path');
 
 const app = express();
 app.use(cors());
 const connectionString = 'connectionString';
 const ObjectId = require('mongodb').ObjectID;
+
+app.use(express.static(path.resolve(__dirname, '../../client/dist')));
+
+app.get("/api", (req, res) => {
+  res.json({ message: "Hello from server!" });
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../../client/dist', 'index.html'));
+});
 
 MongoClient.connect(connectionString)
   .then((client) => {
