@@ -9,7 +9,7 @@ export default defineConfig({
       path: '/',
       component: '@/layouts/mainLayout',
       routes: [
-        { path: '/', component: '@/pages/home/index', exact: true },
+        { path: '/', redirect: '/home', exact: true },
         {
           path: '/home',
           component: '@/pages/home/index',
@@ -21,6 +21,12 @@ export default defineConfig({
         {
           path: '/sessions/:sessionId',
           component: '@/pages/sessions/[sessionId]/index',
+          exact: true,
+        },
+        {
+          path: '/sessions/:sessionId/new',
+          component: '@/pages/sessions/[sessionId]/new/index',
+          exact: true,
         },
       ],
     },

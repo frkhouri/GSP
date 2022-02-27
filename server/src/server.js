@@ -1,13 +1,16 @@
-const bodyParser = require('body-parser');
-const express = require('express');
-const cors = require('cors');
-const MongoClient = require('mongodb').MongoClient;
-const path = require('path');
+import bodyParser from 'body-parser';
+import fileupload from 'express-fileupload';
+import express from 'express';
+import cors from 'cors';
+import mongodb from 'mongodb';
+import fs from 'fs';
+import path from 'path;
 
 const app = express();
 app.use(cors());
 const connectionString = 'connectionString';
-const ObjectId = require('mongodb').ObjectID;
+app.use(fileupload());
+const ObjectId = mongodb.ObjectID;
 
 app.use(express.static(path.resolve(__dirname, '../../client/dist')));
 
@@ -19,68 +22,43 @@ app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../../client/dist', 'index.html'));
 });
 
-MongoClient.connect(connectionString)
+mongodb.MongoClient.connect(connectionString)
   .then((client) => {
     console.log('Connected to Database');
 
     const db = client.db('khabib-test');
     const sessionsCollection = db.collection('sessions');
+    const preparedSessionsCollection = db.collection('prepared_sessions');
 
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
 
-    // app.get("/", (req, res) => {
-    //   sessionsCollection
-    //     .find()
-    //     .toArray()
-    //     .then((results) => {
-    //       console.log(results);
-    //       res.send(results);
-    //     })
-    //     .catch((error) => console.error(error));
-    // });
-
     app.get('/api/sessions', (req, res) => {
-      console.log(req.query);
       req.query.sessionId
         ? sessionsCollection
             .find({ _id: ObjectId(req.query.sessionId) })
             .toArray()
             .then((results) => {
-              console.log(results);
               res.send(results[0]);
             })
             .catch((error) => console.error(error))
         : sessionsCollection
-            .find()
-            .sort({ start: -1 })
+            .find({ completed: true })
+            .sort({ start: 1 })
             .toArray()
             .then((results) => {
-              console.log(results);
               res.send(results);
             })
             .catch((error) => console.error(error));
     });
 
-    // app.get(`/api/sessions?sessionId`, (req, res) => {
-    //   sessionsCollection
-    //     .find({ _id: sessionId })
-    //     .then((result) => {
-    //       console.log(result);
-    //       res.send(result);
-    //     })
-    //     .catch((e) => console.error(e));
-    // });
-
-    app.get('/api/sessions/latest', (req, res) => {
+    app.get('/api/sessions/latest', (_req, res) => {
       sessionsCollection
-        .find()
-        .sort( { _id: -1} )
-        // .sort({ start: -1 })
+        .find({ completed: true })
+        .sort({ _id: -1 })
         .limit(1)
         .toArray()
         .then((result) => {
-          console.log(result);
           res.send(result[0]);
         })
         .catch((e) => console.error(e));
@@ -100,9 +78,9 @@ MongoClient.connect(connectionString)
 
         return {
           ...combo,
-          accuracy: +(accuracy).toFixed(3),
-          force: +(force).toFixed(3),
-          performance: +(performance).toFixed(3),
+          accuracy: +accuracy.toFixed(3),
+          force: +force.toFixed(3),
+          performance: +performance.toFixed(3),
         };
       });
 
@@ -126,15 +104,63 @@ MongoClient.connect(connectionString)
         combos: processedCombos,
       };
 
-      console.log(processedData);
-
       sessionsCollection
         .insertOne(processedData)
-        .then((result) => {
-          console.log(result);
+        .then(() => {
           res.send();
         })
         .catch((error) => console.error(error));
+
+      res.send();
+    });
+
+    app.post('/api/start-session', (req, res) => {
+      sessionsCollection.insertOne(
+        { completed: false, ...req.body },
+        function (err, result) {
+          if (err) {
+            throw err;
+          } else {
+            res.send(result);
+          }
+        },
+      );
+    });
+
+    app.get(`/recordings`, function (req, res) {
+      const path = `recordings/${req.query.sessionId}.mp4`;
+      const stat = fs.statSync(path);
+      const fileSize = stat.size;
+      const range = req.headers.range;
+      if (range) {
+        const parts = range.replace(/bytes=/, '').split('-');
+        const start = parseInt(parts[0], 10);
+        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+        const chunksize = end - start + 1;
+        const file = fs.createReadStream(path, { start, end });
+        const head = {
+          'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': chunksize,
+          'Content-Type': 'video/mp4',
+        };
+        res.writeHead(206, head);
+        file.pipe(res);
+      } else {
+        const head = {
+          'Content-Length': fileSize,
+          'Content-Type': 'video/mp4',
+        };
+        res.writeHead(200, head);
+        fs.createReadStream(path).pipe(res);
+      }
+    });
+
+    app.post('/api/recordings', async (req, res) => {
+      fs.writeFileSync(
+        './recordings/' + req.files.inputFile.name + '.mp4',
+        req.files.inputFile.data,
+      );
 
       res.send();
     });

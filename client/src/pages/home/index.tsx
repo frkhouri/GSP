@@ -1,17 +1,22 @@
 import { useEffect, useState } from 'react';
-import LoadingButton from '@mui/lab/LoadingButton';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import { Typography } from '@mui/material';
-import '@fontsource/oxygen/700.css'
+import { Button, Typography } from '@mui/material';
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import '@fontsource/oxygen/700.css';
 
+import CustomCard from '../components/CustomCard';
 import ProgressCard from '../components/ProgressCard';
 import ResultsCard from '../components/ResultsCard';
-import styles from './styles.less';
+import StartDialog from './components/StartDialog';
 
 export default () => {
   const [sessions, setSessions] = useState();
   const [loading, setLoading] = useState(false);
+  const [backdropOpen, setBackdropOpen] = useState(false);
+
+  async function startSession() {
+    setLoading(true);
+    setBackdropOpen(true);
+  }
 
   useEffect(() => {
     fetch('http://localhost:3001/api/sessions')
@@ -29,9 +34,26 @@ export default () => {
           </Typography>
         </Toolbar>
       </AppBar> */}
-      <Typography variant="h4" style={{ padding: '15px 15px 0 15px', fontWeight: '700' }}>
+      <Typography
+        variant="h4"
+        gutterBottom
+        style={{ padding: '15px', fontWeight: '700' }}
+      >
         Overview
       </Typography>
+      <CustomCard>
+        <Button
+          variant="contained"
+          fullWidth
+          size="large"
+          startIcon={<AddRoundedIcon />}
+          onClick={() => startSession()}
+          style={{ height: '100px', fontFamily: 'Oxygen', fontSize: 'large' }}
+        >
+          NEW SESSION
+        </Button>
+      </CustomCard>
+      <StartDialog open={backdropOpen} setOpen={setBackdropOpen} />
       <>
         <Typography
           variant="subtitle1"
@@ -40,7 +62,7 @@ export default () => {
           Latest Session
         </Typography>
         {sessions ? (
-          <ResultsCard sessionData={sessions[0]} />
+          <ResultsCard sessionData={sessions[sessions.length - 1]} />
         ) : (
           <p>loading...</p>
         )}
@@ -54,7 +76,7 @@ export default () => {
         </Typography>
         {sessions ? (
           <ProgressCard
-            sessionData={sessions.reverse().map(session => {
+            sessionData={sessions.map(session => {
               return {
                 date: new Date(session.start).getTime(),
                 accuracy: session.accuracy,
@@ -66,13 +88,6 @@ export default () => {
           <p>loading...</p>
         )}
       </>
-      {/* <LoadingButton
-        variant="contained"
-        loading={loading}
-        onClick={() => startSession()}
-      >
-        START SESSION
-      </LoadingButton> */}
     </div>
   );
 };

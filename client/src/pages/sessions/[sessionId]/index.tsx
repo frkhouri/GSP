@@ -58,9 +58,12 @@ export default () => {
           )}
         </Toolbar>
       </AppBar> */}
-      <CustomCard style={{ padding: '15px', margin: '15px' }}>
-        {sessionData && <PerformanceChart data={sessionData.combos} />}
+      <CustomCard>
+        {sessionData && <ResultsCard sessionData={sessionData} />}
       </CustomCard>
+      <video id="videoPlayer" controls style={{ width: '100%' }}>
+        <source src={`http://localhost:3001/recordings?sessionId=${params.sessionId}`} type="video/mp4" />
+      </video>
     </>
   );
 };
