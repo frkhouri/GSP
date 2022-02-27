@@ -6,7 +6,7 @@ import '@fontsource/oxygen/700.css';
 import CustomCard from '../components/CustomCard';
 import ProgressCard from '../components/ProgressCard';
 import ResultsCard from '../components/ResultsCard';
-import StartDialog from '../components/StartDialog';
+import StartDialog from './components/StartDialog';
 
 export default () => {
   const [sessions, setSessions] = useState();
@@ -16,9 +16,6 @@ export default () => {
   async function startSession() {
     setLoading(true);
     setBackdropOpen(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 3000);
   }
 
   useEffect(() => {

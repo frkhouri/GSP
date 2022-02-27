@@ -13,7 +13,6 @@ import CustomCard from './CustomCard';
 import PerformanceChart from './PerformanceChart';
 
 const ResultsCard = ({ sessionData }) => {
-  console.log(sessionData);
   return (
     <CustomCard>
       {sessionData ? (

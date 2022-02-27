@@ -20,11 +20,12 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import { history } from 'umi';
 
 import styles from './styles.less';
-import LoadingButton from '@mui/lab/LoadingButton';
 
 type StartDialogProps = {
   open: boolean;
@@ -38,12 +39,8 @@ type DrillProps = {
 
 const StartDialog = ({ open, setOpen }: StartDialogProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [difficulty, setDifficulty] = useState();
-  const [drills, setDrills] = useState<Array<DrillProps>>([
-    { type: 'Jabs', duration: 3 },
-    { type: 'Crosses', duration: 3 },
-    { type: 'Punching Bag', duration: 3 },
-  ]);
+  const [difficulty, setDifficulty] = useState<string>();
+  const [drills, setDrills] = useState<Array<DrillProps>>([]);
   const [newDrill, setNewDrill] = useState<DrillProps>({});
 
   const handleCancel = () => {
@@ -65,8 +62,14 @@ const StartDialog = ({ open, setOpen }: StartDialogProps) => {
       body: JSON.stringify(body),
       headers: new Headers({ 'content-type': 'application/json' }),
     })
+      .then(res => res.json())
       .then(data => {
-        setIsLoading(false);
+        setOpen(false);
+        console.log(data);
+        history.push({
+          pathname: `sessions/${data.insertedId}/new`,
+          // state: {sessionData,
+        });
       })
       .catch(e => console.error(e));
   };
@@ -158,7 +161,7 @@ const StartDialog = ({ open, setOpen }: StartDialogProps) => {
                     shrink: true,
                   }}
                   onChange={e =>
-                    setNewDrill({ ...newDrill, duration: e.target.value })
+                    setNewDrill({ ...newDrill, duration: Number(e.target.value) })
                   }
                   style={{ width: '25%' }}
                 />
@@ -178,7 +181,7 @@ const StartDialog = ({ open, setOpen }: StartDialogProps) => {
         </List>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => handleCancel(false)}>Cancel</Button>
+        <Button onClick={() => handleCancel()}>Cancel</Button>
         <LoadingButton
           variant="contained"
           onClick={() => handleStart()}
