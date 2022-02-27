@@ -4,12 +4,23 @@ import express from 'express';
 import cors from 'cors';
 import mongodb from 'mongodb';
 import fs from 'fs';
+import path from 'path;
 
 const app = express();
 app.use(cors());
 const connectionString = 'connectionString';
 app.use(fileupload());
 const ObjectId = mongodb.ObjectID;
+
+app.use(express.static(path.resolve(__dirname, '../../client/dist')));
+
+app.get("/api", (req, res) => {
+  res.json({ message: "Hello from server!" });
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../../client/dist', 'index.html'));
+});
 
 mongodb.MongoClient.connect(connectionString)
   .then((client) => {
