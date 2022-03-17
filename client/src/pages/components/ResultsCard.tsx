@@ -132,7 +132,7 @@ const ResultsCard = ({ sessionData }) => {
                   </Box>
                 </Grid> */}
                   <Grid item xs={12}>
-                    <PerformanceChart data={sessionData.combos} />
+                    <PerformanceChart combos={sessionData.combos} />
                   </Grid>
                 </Grid>
               </Box>

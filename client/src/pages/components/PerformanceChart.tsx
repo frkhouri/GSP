@@ -9,8 +9,19 @@ import {
 } from 'recharts';
 import { useTheme } from '@material-ui/core';
 
-const PerformanceChart = ({ data }) => {
+const PerformanceChart = ({ combos }) => {
   const theme = useTheme();
+  const data = [];
+
+  combos.forEach(combo => {
+    combo.strikes.forEach(strike => {
+      data.push({
+        performance: strike.performance,
+        time: strike.time,
+      });
+    });
+  });
+
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
