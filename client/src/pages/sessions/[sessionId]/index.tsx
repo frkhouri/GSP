@@ -8,9 +8,7 @@ import Typography from '@mui/material/Typography';
 import dayjs from 'dayjs';
 
 import CustomCard from '@/pages/components/CustomCard';
-// import ProgressCard from '../components/ProgressCard';
 import ResultsCard from '../../components/ResultsCard';
-import PerformanceChart from '../../components/PerformanceChart';
 // import styles from './index.less';
 // import { Typography } from '@mui/material';
 
@@ -61,9 +59,14 @@ export default () => {
       <CustomCard>
         {sessionData && <ResultsCard sessionData={sessionData} />}
       </CustomCard>
-      <video id="videoPlayer" controls style={{ width: '100%' }}>
-        <source src={`http://localhost:3001/recordings?sessionId=${params.sessionId}`} type="video/mp4" />
-      </video>
+      <CustomCard>
+        <video id="videoPlayer" controls style={{ width: '100%' }}>
+          <source
+            src={`http://localhost:3001/recordings?sessionId=${params.sessionId}`}
+            type="video/mp4"
+          />
+        </video>
+      </CustomCard>
     </>
   );
 };

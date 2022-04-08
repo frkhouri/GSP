@@ -11,16 +11,6 @@ const connectionString = 'connectionString';
 app.use(fileupload());
 const ObjectId = mongodb.ObjectID;
 
-app.use(express.static(path.resolve(__dirname, '../../client/dist')));
-
-app.get("/api", (req, res) => {
-  res.json({ message: "Hello from server!" });
-});
-
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../../client/dist', 'index.html'));
-});
-
 mongodb.MongoClient.connect(connectionString)
   .then((client) => {
     console.log('Connected to Database');
@@ -63,28 +53,45 @@ mongodb.MongoClient.connect(connectionString)
     });
 
     app.post('/api/sessions', (req, res) => {
+      var totalForce = 0;
+      var numTotalStrikes = 0;
+      var maxForce = 0;
+      // var numTotalHits = 0;
+      var performance = 0;
       const processedCombos = req.body.combos.map((combo) => {
-        var performance = 0;
         var reps = 0;
         const maxReps = combo.strikes.length / combo.sequence.length;
 
+        // var numHits = 0;
+        // var numStrikes = 0;
         var i = 0;
         strikesLoop: while (
-          i <
-          combo.strikes.length - combo.sequence.length + 1
+          i < combo.strikes.length /* - combo.sequence.length + 1*/
         ) {
           var j = 0;
-          while (j < combo.sequence.length) {
+          while (
+            j < combo.sequence.length /* && i + j < combo.strikes.length*/
+          ) {
+            if (i + j == combo.strikes.length) {
+              i++;
+              // numTotalStrikes++;
+              continue strikesLoop;
+            }
+
+            // totalForce += combo.strikes[i + j].force;
+
             if (combo.strikes[i + j].type != combo.sequence[j]) {
               performance =
-                performance - 0.005 * combo.strikes[i + j].force < 0
+                performance - 0.0075 * combo.strikes[i + j].force < 0
                   ? 0
-                  : performance - 0.005 * combo.strikes[i + j].force;
+                  : performance - 0.0075 * combo.strikes[i + j].force;
               combo.strikes[i + j] = {
                 performance: performance,
                 ...combo.strikes[i + j],
               };
               i++;
+              // numStrikes++;
+              // numTotalStrikes++;
               continue strikesLoop;
             }
 
@@ -93,6 +100,10 @@ mongodb.MongoClient.connect(connectionString)
               performance: performance,
               ...combo.strikes[i + j],
             };
+            // numHits++;
+            // numStrikes++;
+            // numTotalHits++;
+            // numTotalStrikes++;
 
             j++;
           }
@@ -102,6 +113,7 @@ mongodb.MongoClient.connect(connectionString)
         }
 
         const accuracy = reps / maxReps;
+        // const accuracy = numHits / numStrikes;
 
         return {
           ...combo,
@@ -111,20 +123,35 @@ mongodb.MongoClient.connect(connectionString)
         };
       });
 
-      var performance = 0;
-      processedCombos.forEach((combo) => (performance += combo.performance));
-      performance = performance / processedCombos.length;
+      var totalPerformance = 0;
+      processedCombos.forEach(
+        (combo) => (totalPerformance += combo.performance),
+      );
+      totalPerformance = totalPerformance / processedCombos.length;
 
+      // const accuracy = numTotalHits / numTotalStrikes;
       var accuracy = 0;
       processedCombos.forEach((combo) => (accuracy += combo.accuracy));
       accuracy = accuracy / processedCombos.length;
+
+      processedCombos.forEach((combo) => {
+        combo.strikes.forEach((strike) => {
+          totalForce += strike.force;
+          if (strike.force > maxForce) {
+            maxForce = strike.force;
+          }
+          numTotalStrikes++;
+        });
+      });
+      totalForce = totalForce / numTotalStrikes;
 
       const processedData = {
         _id: ObjectId(req.body._id),
         start: new Date(req.body.start),
         end: new Date(req.body.end),
-        accuracy,
-        performance,
+        accuracy: +accuracy.toFixed(3),
+        performance: +performance.toFixed(3),
+        force: +maxForce.toFixed(0),
         combos: processedCombos,
         completed: true,
       };
@@ -158,7 +185,7 @@ mongodb.MongoClient.connect(connectionString)
             ? ['jab']
             : sequence.type === 'Crosses'
             ? ['cross']
-            : [''];
+            : ['jab', 'cross'];
         return { combo: combo, ...sequence };
       });
 

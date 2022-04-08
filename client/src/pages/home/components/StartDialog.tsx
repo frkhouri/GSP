@@ -57,11 +57,14 @@ const StartDialog = ({ open, setOpen }: StartDialogProps) => {
       sequence: drills,
     };
 
-    fetch('http://localhost:3001/api/start-session', {
-      method: 'POST',
-      body: JSON.stringify(body),
-      headers: new Headers({ 'content-type': 'application/json' }),
-    })
+    fetch(
+      'http://localhost:3001/api/start-session',
+      {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: new Headers({ 'content-type': 'application/json' }),
+      },
+    )
       .then(res => res.json())
       .then(data => {
         setOpen(false);
@@ -149,9 +152,31 @@ const StartDialog = ({ open, setOpen }: StartDialogProps) => {
                 >
                   <MenuItem value={'Jabs'}>Jabs</MenuItem>
                   <MenuItem value={'Crosses'}>Crosses</MenuItem>
-                  <MenuItem value={'Punching Bag'}>Punching Bag</MenuItem>
+                  <MenuItem value={'Jab, Cross'}>Jab, Cross</MenuItem>
                 </Select>
-                <TextField
+                <FormControl style={{ width: '40%' }}>
+                  <InputLabel id="duration-label">Duration</InputLabel>
+                  <Select
+                    labelId="duration-label"
+                    id="duration"
+                    value={newDrill.duration || ''}
+                    variant="filled"
+                    onChange={e =>
+                      setNewDrill({
+                        ...newDrill,
+                        duration: e.target.value as number,
+                      })
+                    }
+                  >
+                    <MenuItem value={0.08333}>5 Seconds</MenuItem>
+                    <MenuItem value={0.25}>15 Seconds</MenuItem>
+                    <MenuItem value={0.5}>30 Seconds</MenuItem>
+                    <MenuItem value={1}>1 minute</MenuItem>
+                    <MenuItem value={2}>2 minutes</MenuItem>
+                    <MenuItem value={4}>4 minutes</MenuItem>
+                  </Select>
+                </FormControl>
+                {/* <TextField
                   id="duration"
                   label="Duration"
                   type="number"
@@ -164,7 +189,7 @@ const StartDialog = ({ open, setOpen }: StartDialogProps) => {
                     setNewDrill({ ...newDrill, duration: Number(e.target.value) })
                   }
                   style={{ width: '25%' }}
-                />
+                /> */}
               </div>
               <ListItemSecondaryAction>
                 <IconButton
