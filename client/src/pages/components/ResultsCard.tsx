@@ -49,7 +49,35 @@ const ResultsCard = ({ sessionData }) => {
             {sessionData ? (
               <Box sx={{ flexGrow: 1 }}>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} align="center">
+                  <Grid item xs={4} align="center">
+                    <Box
+                      sx={{
+                        position: 'relative',
+                        display: 'inline-flex',
+                        flexDirection: 'column',
+                      }}
+                    >
+                      <Typography fontSize={'2rem'} color={'primary'}>
+                        {sessionData.performance.toFixed(0)}
+                      </Typography>
+                      <Typography variant="caption">Performance</Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={4} align="center">
+                    <Box
+                      sx={{
+                        position: 'relative',
+                        display: 'inline-flex',
+                        flexDirection: 'column',
+                      }}
+                    >
+                      <Typography fontSize={'2rem'} color={'primary'}>
+                        {sessionData.force} N
+                      </Typography>
+                      <Typography variant="caption">Force</Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={4} align="center">
                     <Box
                       sx={{
                         position: 'relative',
@@ -59,7 +87,7 @@ const ResultsCard = ({ sessionData }) => {
                     >
                       <CircularProgress
                         variant="determinate"
-                        value={sessionData.accuracy * 100}
+                        value={(sessionData.accuracy * 100).toFixed(1)}
                         size={70}
                         thickness={3}
                       />
@@ -106,33 +134,9 @@ const ResultsCard = ({ sessionData }) => {
                       </Typography>
                     </Box>
                   </Box>
-                </Grid>
-                <Grid item xs={4}>
-                  <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-                    <CircularProgress
-                      variant="determinate"
-                      value={sessionData.accuracy}
-                    />
-                    <Box
-                      sx={{
-                        top: 0,
-                        left: 0,
-                        bottom: 0,
-                        right: 0,
-                        position: 'absolute',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Typography variant="caption">
-                        {sessionData.accuracy}%
-                      </Typography>
-                    </Box>
-                  </Box>
                 </Grid> */}
                   <Grid item xs={12}>
-                    <PerformanceChart data={sessionData.combos} />
+                    <PerformanceChart combos={sessionData.combos} />
                   </Grid>
                 </Grid>
               </Box>

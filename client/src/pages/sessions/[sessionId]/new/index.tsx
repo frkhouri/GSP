@@ -74,7 +74,7 @@ export default () => {
     <div className={styles.cameraView}>
       <Webcam
         ref={webcamRef}
-        mirrored={facingMode === 'user'}
+        mirrored={facingMode === 'environment'}
         videoConstraints={{ facingMode: facingMode }}
         style={{ height: '100%', position: 'absolute' }}
       />

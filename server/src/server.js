@@ -4,7 +4,6 @@ import express from 'express';
 import cors from 'cors';
 import mongodb from 'mongodb';
 import fs from 'fs';
-import path from 'path;
 
 const app = express();
 app.use(cors());
@@ -12,23 +11,12 @@ const connectionString = 'connectionString';
 app.use(fileupload());
 const ObjectId = mongodb.ObjectID;
 
-app.use(express.static(path.resolve(__dirname, '../../client/dist')));
-
-app.get("/api", (req, res) => {
-  res.json({ message: "Hello from server!" });
-});
-
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../../client/dist', 'index.html'));
-});
-
 mongodb.MongoClient.connect(connectionString)
   .then((client) => {
     console.log('Connected to Database');
 
     const db = client.db('khabib-test');
-    const sessionsCollection = db.collection('sessions');
-    const preparedSessionsCollection = db.collection('prepared_sessions');
+    const sessionsCollection = db.collection('sessions2');
 
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
@@ -65,58 +53,144 @@ mongodb.MongoClient.connect(connectionString)
     });
 
     app.post('/api/sessions', (req, res) => {
+      var totalForce = 0;
+      var numTotalStrikes = 0;
+      var maxForce = 0;
+      // var numTotalHits = 0;
+      var performance = 0;
       const processedCombos = req.body.combos.map((combo) => {
-        const accuracy =
-          combo.strikes.filter((strike) => strike.hit).length /
-          combo.strikes.length;
-        var force = 0;
-        combo.strikes
-          .filter((strike) => strike.hit)
-          .forEach((strike) => (force += strike.force));
-        force = force / combo.strikes.length.filter((strike) => strike.hit);
-        const performance = accuracy * force;
+        var reps = 0;
+        const maxReps = combo.strikes.length / combo.sequence.length;
+
+        // var numHits = 0;
+        // var numStrikes = 0;
+        var i = 0;
+        strikesLoop: while (
+          i < combo.strikes.length /* - combo.sequence.length + 1*/
+        ) {
+          var j = 0;
+          while (
+            j < combo.sequence.length /* && i + j < combo.strikes.length*/
+          ) {
+            if (i + j == combo.strikes.length) {
+              i++;
+              // numTotalStrikes++;
+              continue strikesLoop;
+            }
+
+            // totalForce += combo.strikes[i + j].force;
+
+            if (combo.strikes[i + j].type != combo.sequence[j]) {
+              performance =
+                performance - 0.0075 * combo.strikes[i + j].force < 0
+                  ? 0
+                  : performance - 0.0075 * combo.strikes[i + j].force;
+              combo.strikes[i + j] = {
+                performance: performance,
+                ...combo.strikes[i + j],
+              };
+              i++;
+              // numStrikes++;
+              // numTotalStrikes++;
+              continue strikesLoop;
+            }
+
+            performance = performance + 0.01 * combo.strikes[i + j].force;
+            combo.strikes[i + j] = {
+              performance: performance,
+              ...combo.strikes[i + j],
+            };
+            // numHits++;
+            // numStrikes++;
+            // numTotalHits++;
+            // numTotalStrikes++;
+
+            j++;
+          }
+
+          reps++;
+          i = i + j;
+        }
+
+        const accuracy = reps / maxReps;
+        // const accuracy = numHits / numStrikes;
 
         return {
           ...combo,
           accuracy: +accuracy.toFixed(3),
-          force: +force.toFixed(3),
+          // force: +force.toFixed(3),
           performance: +performance.toFixed(3),
         };
       });
 
-      var numStrikes = 0;
-      var numHits = 0;
-      processedCombos.forEach((combo) => {
-        numStrikes += combo.strikes.length;
-        numHits += combo.strikes.filter((strike) => strike.hit).length;
-      });
-      const accuracy = +(numHits / numStrikes).toFixed(3);
+      var totalPerformance = 0;
+      processedCombos.forEach(
+        (combo) => (totalPerformance += combo.performance),
+      );
+      totalPerformance = totalPerformance / processedCombos.length;
 
-      var performance = 0;
-      processedCombos.forEach((combo) => (performance += combo.performance));
-      performance = performance / processedCombos.length;
+      // const accuracy = numTotalHits / numTotalStrikes;
+      var accuracy = 0;
+      processedCombos.forEach((combo) => (accuracy += combo.accuracy));
+      accuracy = accuracy / processedCombos.length;
+
+      processedCombos.forEach((combo) => {
+        combo.strikes.forEach((strike) => {
+          totalForce += strike.force;
+          if (strike.force > maxForce) {
+            maxForce = strike.force;
+          }
+          numTotalStrikes++;
+        });
+      });
+      totalForce = totalForce / numTotalStrikes;
 
       const processedData = {
+        _id: ObjectId(req.body._id),
         start: new Date(req.body.start),
         end: new Date(req.body.end),
-        accuracy,
-        performance,
+        accuracy: +accuracy.toFixed(3),
+        performance: +performance.toFixed(3),
+        force: +maxForce.toFixed(0),
         combos: processedCombos,
+        completed: true,
       };
 
       sessionsCollection
-        .insertOne(processedData)
+        .replaceOne({ _id: processedData._id }, processedData)
         .then(() => {
           res.send();
         })
         .catch((error) => console.error(error));
 
-      res.send();
+      res.send({ success: true });
+    });
+
+    app.get('/api/start-session', (req, res) => {
+      sessionsCollection
+        .find({ completed: false })
+        .sort({ _id: -1 })
+        .limit(1)
+        .toArray()
+        .then((result) => {
+          res.send(result[0]);
+        })
+        .catch((e) => console.error(e));
     });
 
     app.post('/api/start-session', (req, res) => {
+      const sequence = req.body.sequence.map((sequence) => {
+        const combo =
+          sequence.type === 'Jabs'
+            ? ['jab']
+            : sequence.type === 'Crosses'
+            ? ['cross']
+            : ['jab', 'cross'];
+        return { combo: combo, ...sequence };
+      });
+
       sessionsCollection.insertOne(
-        { completed: false, ...req.body },
+        { completed: false, ...req.body, sequence: sequence },
         function (err, result) {
           if (err) {
             throw err;
